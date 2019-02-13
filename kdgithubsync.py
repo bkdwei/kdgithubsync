@@ -56,6 +56,7 @@ class kdgithubsync(QWidget):
     @pyqtSlot()
     def on_pb_update_repository_clicked(self):
         print("正在更新代码")
+        self.path = self.le_path.text()
         os.system("cd {};git pull https://www.github.com/{}/{}.git".format(self.path,
                                                                            self.config.conf["username"], self.config.conf["project"]))
         os.system("echo 更新代码成功")
@@ -66,6 +67,7 @@ class kdgithubsync(QWidget):
             self, "备注更新", "请输入备注本次更新（可为空）:", "")
         if ok:
             print("正在提交更新")
+            self.path = self.le_path.text()
             os.system("cd {};git add -A;git commit -m '{}'".format(self.path, comment))
             os.system("echo 提交更新成功")
 
