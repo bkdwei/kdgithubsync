@@ -18,7 +18,9 @@ class kdgithubsync(QWidget):
         super(kdgithubsync, self).__init__()
         loadUi("kdgithubsync.ui", self)
         self.config = config()
-        if self.config.conf :
+        self.exec_cmd = self.config.exec_cmd
+        self.config.show_result = self.show_result
+        if self.config.conf:
             self.path = self.config.conf["path"]
             self.le_path.setText(self.path)
 
@@ -31,13 +33,13 @@ class kdgithubsync(QWidget):
     def on_pb_generate_key_clicked(self):
         if not self.config.conf["email"]:
             self.on_pb_config_account_clicked()
-        print("正在生成令牌，请回车确认")
-        os.system("ssh-keygen -t rsa -C {}".format(self.config.conf["email"]))
-        os.system("echo 生成令牌结束")
+        self.show_result("正在生成令牌，请回车确认")
+        self.exec_cmd("ssh-keygen -t rsa -C {}".format(self.config.conf["email"]))
+        self.show_result("生成令牌结束")
 
     @pyqtSlot()
     def on_pb_view_key_clicked(self):
-        with open(os.environ['HOME'] + "/.ssh/id_rsa.pub", "r") as f:
+        with open(os.environ["HOME"] + "/.ssh/id_rsa.pub", "r") as f:
             QMessageBox.information(self, "令牌", f.read(), QMessageBox.Yes)
 
     @pyqtSlot()
@@ -47,35 +49,45 @@ class kdgithubsync(QWidget):
     @pyqtSlot()
     def on_pb_init_project_clicked(self):
         self.path = self.le_path.text()
-        check_and_create_dir(self.path)
-        print("正在初始化项目")
-        os.system("cd {};git init;git remote add origin git@github.com:{}/{}.git".format(
-            self.path, self.config.conf["username"], self.config.conf["project"]))
-        os.system("echo 初始化项目成功")
+        if self.path and self.config.conf:
+            check_and_create_dir(self.path)
+            self.show_result("正在初始化项目")
+            cmd_init_project = "cd {};git init;git remote add origin git@github.com:{}/{}.git".format(
+                self.path, self.config.conf["username"], self.config.conf["project"]
+            )
+            self.exec_cmd(cmd_init_project)
+            self.show_result("初始化项目成功")
 
     @pyqtSlot()
     def on_pb_update_repository_clicked(self):
-        print("正在更新代码")
+        self.show_result("正在更新代码")
         self.path = self.le_path.text()
-        os.system("cd {};git pull https://www.github.com/{}/{}.git".format(self.path,
-                                                                           self.config.conf["username"], self.config.conf["project"]))
-        os.system("echo 更新代码成功")
+        self.exec_cmd(
+            "cd {};git pull https://www.github.com/{}/{}.git".format(
+                self.path, self.config.conf["username"], self.config.conf["project"]
+            )
+        )
+        self.show_result("更新代码成功")
 
     @pyqtSlot()
     def on_pb_commit_update_clicked(self):
-        comment, ok = QInputDialog.getMultiLineText(
-            self, "备注更新", "请输入备注本次更新（可为空）:", "")
+        comment, ok = QInputDialog.getMultiLineText(self, "备注更新", "请输入备注本次更新（可为空）:", "")
         if ok:
-            print("正在提交更新")
+            self.show_result("正在提交更新")
             self.path = self.le_path.text()
-            os.system("cd {};git add -A;git commit -m '{}'".format(self.path, comment))
-            os.system("echo 提交更新成功")
+            self.exec_cmd(
+                "cd {};git add -A;git commit -m '{}'".format(self.path, comment)
+            )
+            self.show_result("提交更新成功")
 
     @pyqtSlot()
     def on_pb_push_update_clicked(self):
-        print("正在推送代码到服务器")
-        os.system("cd {};git push -u origin master".format(self.path))
-        os.system("echo 推送代码到服务器成功")
+        self.show_result("正在推送代码到服务器")
+        self.exec_cmd("cd {};git push -u origin master".format(self.path))
+        self.show_result("推送代码到服务器成功")
+
+    def show_result(self, result):
+        self.te_result.setText(self.te_result.toPlainText() + "\n" + result)
 
 
 if __name__ == "__main__":
