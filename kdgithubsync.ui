@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>mainForm</class>
+ <widget class="QWidget" name="mainForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>454</width>
+    <height>156</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>kdgithubsync</string>
+  </property>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>30</y>
+     <width>421</width>
+     <height>110</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <property name="horizontalSpacing">
+     <number>20</number>
+    </property>
+    <property name="verticalSpacing">
+     <number>17</number>
+    </property>
+    <item row="0" column="0">
+     <widget class="QLabel" name="lbl_path">
+      <property name="text">
+       <string>项目地址</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="2">
+     <widget class="QPushButton" name="pb_config_account">
+      <property name="text">
+       <string>配置帐号</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QPushButton" name="pb_generate_key">
+      <property name="text">
+       <string>生成令牌</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="3">
+     <widget class="QPushButton" name="pb_view_key">
+      <property name="text">
+       <string>查看令牌</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="4">
+     <widget class="QPushButton" name="pb_open_github">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>36</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>打开github.com</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="2">
+     <widget class="QPushButton" name="pb_init_project">
+      <property name="text">
+       <string>初始化项目</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="2">
+     <widget class="QPushButton" name="pb_update_repository">
+      <property name="text">
+       <string>更新代码</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="3">
+     <widget class="QPushButton" name="pb_commit_update">
+      <property name="text">
+       <string>提交更新</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="4">
+     <widget class="QPushButton" name="pb_push_update">
+      <property name="text">
+       <string>推送代码</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1" colspan="4">
+     <widget class="QLineEdit" name="le_path">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
