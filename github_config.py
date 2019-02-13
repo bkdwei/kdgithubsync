@@ -43,6 +43,7 @@ class config(QDialog):
         conf["project"] = self.le_project.text()
         conf["path"] = self.path
         check_and_create(self.config_path)
+        check_and_create_dir(self.path)
         with open(self.config_path, "w+") as f:
             f.write(json.dumps(conf))
             os.system("cd {};git config --global user.name {};git config --global user.email {};".format(
