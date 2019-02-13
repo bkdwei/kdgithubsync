@@ -1,0 +1,2 @@
+# kdgithubsync
+用python3和pyqt5写的github同步客户端
