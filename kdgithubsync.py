@@ -64,12 +64,14 @@ class kdgithubsync(QWidget):
     def on_pb_commit_update_clicked(self):
         comment, ok = QInputDialog.getMultiLineText(
             self, "备注更新", "请输入备注本次更新（可为空）:", "")
-        print("正在提交更新")
-        os.system("cd {};git add -A;git commit -m '{}'".format(self.path, comment))
-        os.system("echo 提交更新成功")
+        if ok:
+            print("正在提交更新")
+            os.system("cd {};git add -A;git commit -m '{}'".format(self.path, comment))
+            os.system("echo 提交更新成功")
 
     @pyqtSlot()
     def on_pb_push_update_clicked(self):
+        print("正在推送代码到服务器")
         os.system("cd {};git push -u origin master".format(self.path))
         os.system("echo 推送代码到服务器成功")
 
