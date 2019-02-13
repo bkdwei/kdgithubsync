@@ -48,6 +48,7 @@ class config(QDialog):
             os.system("cd {};git config --global user.name {};git config --global user.email {};".format(
                 self.path, conf["username"], conf["email"]))
             os.system("echo 设置帐号信息成功")
+        self.conf = conf
 
     @pyqtSlot()
     def on_buttonBox_rejected(self):
