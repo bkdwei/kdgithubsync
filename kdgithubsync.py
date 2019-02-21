@@ -25,7 +25,7 @@ class kdgithubsync(QWidget):
         # ~ self.process.readyReadStandardOutput.connect(self.onReadyReadStandardOutput)
         self.process.setProcessChannelMode(QProcess.MergedChannels)
         print("默认状态:",self.process.state())
-        print(dir(self.process))
+        #~ print(dir(self.process))
         self.process.readyRead.connect(self.onReadyReadStandardOutput)
         # ~ self.process.stateChanged.connect(self.onReadyReadStandardOutput)
 
@@ -66,6 +66,7 @@ class kdgithubsync(QWidget):
             cmd_init_project = "cd {};git init;git remote add origin git@github.com:{}/{}.git".format(
                 self.path, self.config.conf["username"], self.project_name
             )
+            cmd_init_project ="ls;pwd"
             self.exec_cmd(cmd_init_project)
             self.show_result("$ 初始化项目成功")
 
@@ -115,23 +116,31 @@ class kdgithubsync(QWidget):
 
     def onReadyReadStandardOutput(self):
         print("出发状态:",self.process.state())
-        # ~ result = self.process.readAllStandardOutput().data().decode()
-        result = self.process.readAllStandardOutput()
-        print("结果:",str(result))
-        # ~ self.show_result(result)
+        result = self.process.readAllStandardOutput().data().decode()
+        #~ result = str(self.process.readAllStandardOutput())
+        print("结果:",result)
+        self.show_result(result)
+
+    def exec_cmd1(self,cmd):
+        self.process.start(cmd)
 
     def exec_cmd(self, cmd):
         cmds = cmd.split(";")
         for single_cmd in cmds:
-            # ~ if self.process.state() != 2:
-            self.show_result("$ " + single_cmd)
-            print("启动前状态:",self.process.state())
-                # ~ if single_cmd.find("ssh-keygen") >= 0:
-                    # ~ self.process.startDetached(cmd)
-                # ~ else:
-            self.process.setProcessChannelMode(QProcess.MergedChannels)
-            self.process.start(single_cmd,["-i"])
-            print("启动后状态:",self.process.state())
+            if self.process.state() != 2:
+                self.show_result("$ " + single_cmd)
+                print("running:" + single_cmd)
+                self.process.start(single_cmd)
+            else:
+                self.process.execute(single_cmd)
+                self.onReadyReadStandardOutput()
+        print("启动前状态:",self.process.state())
+            # ~ if single_cmd.find("ssh-keygen") >= 0:
+                # ~ self.process.startDetached(cmd)
+            # ~ else:
+        #~ self.process.setProcessChannelMode(QProcess.MergedChannels)
+        #~ self.process.readyRead.connect(self.onReadyReadStandardOutput)
+        print("启动后状态:",self.process.state())
             # ~ self.onReadyReadStandardOutput()
 
 
