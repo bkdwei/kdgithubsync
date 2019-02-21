@@ -127,14 +127,18 @@ class kdgithubsync(QWidget):
     def exec_cmd(self, cmd):
         cmds = cmd.split(";")
         for single_cmd in cmds:
-            if self.process.state() != 2:
+            if self.process.state() != 2 and self.process.state()  != 1:
                 self.show_result("$ " + single_cmd)
+                print("启动前状态:",self.process.state(),single_cmd)
+                self.process.start(single_cmd)
                 print("running:" + single_cmd)
+            elif  self.process.state() ==1:
+                #~ pass
+                self.process.waitForFinished(2000)
                 self.process.start(single_cmd)
             else:
                 self.process.execute(single_cmd)
                 self.onReadyReadStandardOutput()
-        print("启动前状态:",self.process.state())
             # ~ if single_cmd.find("ssh-keygen") >= 0:
                 # ~ self.process.startDetached(cmd)
             # ~ else:
