@@ -4,7 +4,7 @@ import os
 import sys
 import webbrowser
 from PyQt5.QtCore import pyqtSlot, QProcess
-from PyQt5.QtWidgets import QWidget, QApplication, QInputDialog
+from PyQt5.QtWidgets import QWidget, QApplication, QInputDialog, QMessageBox
 from PyQt5.uic import loadUi
 from github_config import config
 from fileutil import check_and_create, check_and_create_dir
@@ -21,13 +21,13 @@ class kdgithubsync(QWidget):
             self.le_path.setText(self.path)
         # ~ 用于执行linux的git指令
         self.process = QProcess()
-        # ~ self.process.readyReadStandardError.connect(self.onReadyReadStandardOutput)
-        # ~ self.process.readyReadStandardOutput.connect(self.onReadyReadStandardOutput)
+        #~ self.process.readyReadStandardError.connect(self.onReadyReadStandardOutput)
+        #~ self.process.readyReadStandardOutput.connect(self.onReadyReadStandardOutput)
         self.process.setProcessChannelMode(QProcess.MergedChannels)
-        print("默认状态:",self.process.state())
-        #~ print(dir(self.process))
         self.process.readyRead.connect(self.onReadyReadStandardOutput)
-        # ~ self.process.stateChanged.connect(self.onReadyReadStandardOutput)
+        #~ self.process.finished.connect(self.onReadyReadStandardOutput)
+        #~ self.process.stateChanged.connect(self.onReadyReadStandardOutput)
+
 
     # ~ 配置帐号
     @pyqtSlot()
@@ -53,7 +53,8 @@ class kdgithubsync(QWidget):
     # ~ 打开github.com
     @pyqtSlot()
     def on_pb_open_github_clicked(self):
-        webbrowser.open_new_tab("https://www.github.com")
+        self.init_project_name()
+        webbrowser.open_new_tab("https://www.github.com/" + self.config.conf["username"] + "/" + self.project_name)
 
     # ~ 初始化项目
     @pyqtSlot()
@@ -63,10 +64,10 @@ class kdgithubsync(QWidget):
             check_and_create_dir(self.path)
             self.init_project_name()
             # ~ self.show_result("$正在初始化项目" + self.project_name)
+            os.chdir(self.path)
             cmd_init_project = "cd {};git init;git remote add origin git@github.com:{}/{}.git".format(
                 self.path, self.config.conf["username"], self.project_name
             )
-            cmd_init_project ="ls;pwd"
             self.exec_cmd(cmd_init_project)
             self.show_result("$ 初始化项目成功")
 
@@ -81,11 +82,12 @@ class kdgithubsync(QWidget):
     # ~ 更新代码
     @pyqtSlot()
     def on_pb_update_repository_clicked(self):
-        # ~ self.show_result("$ 正在更新代码")
+        self.show_result("$ 正在更新代码")
         self.init_project_name()
         self.path = self.le_path.text()
+        os.chdir(self.path)
         self.exec_cmd(
-            "cd {};git pull https://www.github.com/{}/{}.git".format(
+            "cd {};pwd;git pull https://www.github.com/{}/{}.git".format(
                 self.path, self.config.conf["username"], self.project_name
             )
         )
@@ -98,6 +100,7 @@ class kdgithubsync(QWidget):
         if ok:
             # ~ self.show_result("正在提交更新")
             self.path = self.le_path.text()
+            os.chdir(self.path)
             self.exec_cmd(
                 "cd {};git add -A;git commit -m '{}'".format(self.path, comment)
             )
@@ -107,45 +110,35 @@ class kdgithubsync(QWidget):
     @pyqtSlot()
     def on_pb_push_update_clicked(self):
         # ~ self.show_result("正在推送代码到服务器")
+        os.chdir(self.path)
         self.exec_cmd("cd {};git push -u origin master".format(self.path))
         self.show_result("$ 推送代码到服务器成功")
 
     # ~ 在终端输出信息
     def show_result(self, result):
+        print(result)
         self.te_result.append(result)
 
     def onReadyReadStandardOutput(self):
-        print("出发状态:",self.process.state())
         result = self.process.readAllStandardOutput().data().decode()
-        #~ result = str(self.process.readAllStandardOutput())
-        print("结果:",result)
-        self.show_result(result)
-
-    def exec_cmd1(self,cmd):
-        self.process.start(cmd)
+        self.show_result(result.strip())
 
     def exec_cmd(self, cmd):
-        cmds = cmd.split(";")
-        for single_cmd in cmds:
-            if self.process.state() != 2 and self.process.state()  != 1:
+        if cmd.find("ssh-keygen") >= 0:
+            self.process.startDetached(cmd)
+        else:
+            cmds = cmd.split(";")
+            for single_cmd in cmds:
+                #~ 尚未启动
+                print("cmd:" + single_cmd +",process state:" + str(self.process.state()))
                 self.show_result("$ " + single_cmd)
-                print("启动前状态:",self.process.state(),single_cmd)
-                self.process.start(single_cmd)
-                print("running:" + single_cmd)
-            elif  self.process.state() ==1:
-                #~ pass
-                self.process.waitForFinished(2000)
-                self.process.start(single_cmd)
-            else:
-                self.process.execute(single_cmd)
-                self.onReadyReadStandardOutput()
-            # ~ if single_cmd.find("ssh-keygen") >= 0:
-                # ~ self.process.startDetached(cmd)
-            # ~ else:
-        #~ self.process.setProcessChannelMode(QProcess.MergedChannels)
-        #~ self.process.readyRead.connect(self.onReadyReadStandardOutput)
-        print("启动后状态:",self.process.state())
-            # ~ self.onReadyReadStandardOutput()
+                if self.process.state() == 0:
+                    self.process.start(single_cmd)
+                #~ 正在运行中
+                elif  self.process.state() == 1:
+                    self.process.waitForFinished(-1)
+                    self.process.start(single_cmd)
+        self.process.waitForFinished(-1)
 
 
 if __name__ == "__main__":

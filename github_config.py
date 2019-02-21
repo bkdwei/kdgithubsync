@@ -41,6 +41,7 @@ class config(QDialog):
         check_and_create_dir(self.path)
         with open(self.config_path, "w+") as f:
             f.write(json.dumps(conf))
+            os.chdir(self.path)
             self.exec_cmd(
                 "cd {};git config --global user.name {};git config --global user.email {}".format(
                     self.path, conf["username"], conf["email"]
