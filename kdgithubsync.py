@@ -1,3 +1,4 @@
+#!/usr/bin/env  python3
 # -*- coding:utf-8 -*-
 
 import os
@@ -7,13 +8,14 @@ from PyQt5.QtCore import pyqtSlot, QProcess
 from PyQt5.QtWidgets import QWidget, QApplication, QInputDialog, QMessageBox
 from PyQt5.uic import loadUi
 from github_config import config
-from fileutil import check_and_create, check_and_create_dir
+from fileutil import check_and_create, check_and_create_dir,get_file_realpath
 
 
 class kdgithubsync(QWidget):
     def __init__(self):
-        super(kdgithubsync, self).__init__()
-        loadUi("kdgithubsync.ui", self)
+        super().__init__()
+#         loadUi(os.path.join(os.getcwd(), "kdLaunchPad.ui"), self)
+        loadUi(get_file_realpath("kdgithubsync.ui"), self)
         self.config = config()
         self.config.show_result = self.show_result
         if self.config.conf:
@@ -47,7 +49,7 @@ class kdgithubsync(QWidget):
     # ~ 查看令牌
     @pyqtSlot()
     def on_pb_view_key_clicked(self):
-        with open(os.environ["HOME"] + "/.ssh/id_rsa.pub", "r") as f:
+        with open(os.path.join(home_dir, ".ssh/id_rsa.pub"), "r") as f:
             QMessageBox.information(self, "令牌", f.read(), QMessageBox.Yes)
 
     # ~ 打开github.com

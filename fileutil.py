@@ -1,7 +1,11 @@
 # coding: utf-8
 import os
 
-
+cur_dir = os.path.dirname(os.path.realpath(__file__))
+home_dir = os.path.expanduser('~')
+# 获取程序所在目录下的资源文件
+def get_file_realpath(file):
+    return os.path.join(cur_dir,file)
 def check_and_create(absolute_file_path):
     slash_last_index = absolute_file_path.rindex("/")
     path = absolute_file_path[:slash_last_index]

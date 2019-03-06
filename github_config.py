@@ -5,14 +5,14 @@ import json
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QDialog
 from PyQt5.uic import loadUi
-from fileutil import check_and_create, check_and_create_dir
+from fileutil import check_and_create, check_and_create_dir, get_file_realpath,home_dir
 
 
 class config(QDialog):
     def __init__(self):
         super(config, self).__init__()
-        loadUi("github_config.ui", self)
-        self.config_path = os.environ["HOME"] + "/.config/kdgithubsync/config.json"
+        loadUi(get_file_realpath("github_config.ui"), self)
+        self.config_path = os.path.join(home_dir, ".config/kdgithubsync/config.json")
         self.init_conf()
 
     def init_conf(self):
